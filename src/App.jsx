@@ -1,35 +1,59 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from "react";
+import "./App.css";
+import Task from "./Task";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [todoList, setTodoList] = useState([]);
+  const [newTask, setNewTask] = useState("");
+
+  const handChnage = (e) => {
+    setNewTask(e.target.value);
+  };
+
+  const addTask = () => {
+    const task = {
+      id: todoList.length === 0 ? 1 : todoList[todoList.length - 1].id + 1,
+      taskName: newTask,
+      completed: false,
+    };
+    setTodoList((prev) => [...prev, task]);
+    setNewTask("");
+  };
+
+  const deleteTask = (id) => {
+    setTodoList(todoList.filter((task) => task.id !== id));
+  };
+
+  const completeTask = (id) => {
+    setTodoList(
+      todoList.map((task) =>
+        task.id == id ? { ...task, completed: true } : task
+      )
+    );
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="App">
+      <div className="addTask">
+        <input onChange={handChnage} value={newTask} type="text" />
+        <button onClick={addTask}>Add Task</button>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
+      <div className="list">
+        {todoList.map((task) => {
+          return (
+            <Task
+              taskName={task.taskName}
+              id={task.id}
+              key={task.id}
+              deleteTask={deleteTask}
+              completeTask={completeTask}
+              completed={task.completed}
+            />
+          );
+        })}
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    </div>
+  );
 }
 
-export default App
+export default App;
